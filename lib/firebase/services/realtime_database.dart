@@ -8,7 +8,7 @@ class RealtimeDatabase extends Firebase {
 
   RealtimeDatabase({String phoneNumber}) {
     _databaseReference = FirebaseDatabase.instance.reference()
-        .child(MD5.generateHash(phoneNumber));
+        .child(MD5.generateHash(phoneNumber.replaceAll("(", "").replaceAll(")", "").replaceAll("-", "")));
   }
 
   void createOrUpdate(SMSMessage message) {
@@ -17,6 +17,8 @@ class RealtimeDatabase extends Firebase {
 
   Future<SMSMessage> retrieve() async {
     var snapshot = await _databaseReference.once();
+    if(snapshot.value == null)
+      return Future<SMSMessage>.value(null);
     return SMSMessage.fromJson(snapshot.value);
   }
 }

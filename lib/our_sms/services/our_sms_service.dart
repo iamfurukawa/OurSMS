@@ -142,13 +142,15 @@ class OurSMSService with ChangeNotifier {
 
   Future<void> _realtimeListener() async {
     _logStart(TrackingMessage("Listener Realtime started"));
-    Timer.periodic(Duration(seconds: 5), (timer) {
+    Timer.periodic(Duration(seconds: 6), (timer) {
       if (!_running) {
         timer.cancel();
         _logEnd(TrackingMessage("Listener Realtime stopped"));
       }
       if (_realtime != null)
         _realtime.retrieve().then((value) {
+          if(value == null) return;
+
           var actualState = SMSMessage.fromJson(value.toJson());
           if (_state.type != actualState.type) {
             _logSDK(TrackingMessage(_logMapper(actualState.type)));
