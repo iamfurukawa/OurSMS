@@ -147,15 +147,19 @@ class OurSMSService with ChangeNotifier {
         timer.cancel();
         _logEnd(TrackingMessage("Listener Realtime stopped"));
       }
+
       if (_realtime != null)
         _realtime.retrieve().then((value) {
           if(value == null) return;
-
+          print("Scanning status from realtime");
           var actualState = SMSMessage.fromJson(value.toJson());
           if (_state.type != actualState.type) {
+            print("actualState="+actualState.toString());
             _logSDK(TrackingMessage(_logMapper(actualState.type)));
             _state = actualState;
           }
+        }).catchError((err) {
+          print("Error on reading realtime database: " + err.toString());
         });
     });
   }
